@@ -56,7 +56,11 @@ export default {
   },
 
   checkAuth: () => {
-    return Promise.resolve(firebase.auth().currentUser);
+    return new Promise((resolve, reject) => {
+      firebase.auth().onAuthStateChanged(user => {
+        resolve(user);
+      });
+    });
   },
 
   fetchTasks: () => {

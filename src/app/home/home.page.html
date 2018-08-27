@@ -1,9 +1,12 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>AngularFire Ionic4 NGRX</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end"  *ngIf="(user$ | async)" >
       <ion-button icon-end outline (click)="presentModal()">
         ADD
+      </ion-button>
+      <ion-button icon-end outline (click)="doLogout()">
+        LOGOUT
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -25,8 +28,8 @@
     <form #loginForm="ngForm" novalidate>
       <ion-item>
         <ion-label floating color="primary">Username</ion-label>
-        <ion-input [(ngModel)]="credentials.email" name="email" type="text" #email="ngModel"
-          spellcheck="false" autocapitalize="off" required>
+        <ion-input [(ngModel)]="credentials.email" name="email" type="text" #email="ngModel" spellcheck="false" autocapitalize="off"
+          required>
         </ion-input>
       </ion-item>
       <p [hidden]="email.valid || submitted == false" color="danger" padding-left>
@@ -35,8 +38,7 @@
 
       <ion-item>
         <ion-label floating color="primary">Password</ion-label>
-        <ion-input [(ngModel)]="credentials.password" name="password" type="password" #password="ngModel"
-          required>
+        <ion-input [(ngModel)]="credentials.password" name="password" type="password" #password="ngModel" required>
         </ion-input>
       </ion-item>
       <p [hidden]="password.valid || submitted == false" color="danger" padding-left>
@@ -51,8 +53,7 @@
           <ion-button (click)="doCreateUser(loginForm)" color="primary" block>Create User</ion-button>
         </ion-col>
       </ion-row>
-
-
     </form>
   </div>
+  <div>{{(user$ | async) | json}}</div>
 </ion-content>
