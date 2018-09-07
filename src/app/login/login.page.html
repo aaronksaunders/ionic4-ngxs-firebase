@@ -1,11 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>AngularFire Ionic4 NGRX</ion-title>
-    <ion-buttons slot="end">
-      <ion-button icon-end outline (click)="presentModal()">
-        ADD
-      </ion-button>
-    </ion-buttons>
+    <ion-title>login</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -21,7 +16,7 @@
     </ion-row>
   </ion-grid>
   <!-- if we have checked auth and still dont have a user then show login information -->
-  <div *ngIf="(authChecked$ | async) && !(user$ | async)">
+  <div >
     <form #loginForm="ngForm" novalidate>
       <ion-item>
         <ion-label floating color="primary">Username</ion-label>
@@ -54,20 +49,6 @@
             User</ion-button>
         </ion-col>
       </ion-row>
-
-
     </form>
   </div>
-
-  <ion-list>
-    <ion-button (click)="doLogout()" color="primary" block>
-      LOGOUT
-    </ion-button>
-    <ion-item *ngFor="let item of (data$ | async) ">
-      <ion-label text-wrap>
-        <pre>{{item | json }}</pre>
-        <ion-button color="danger" (click)="doDeleteObject(item)">DELETE</ion-button>
-      </ion-label>
-    </ion-item>
-  </ion-list>
 </ion-content>

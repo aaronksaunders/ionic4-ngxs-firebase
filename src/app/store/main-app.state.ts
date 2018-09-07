@@ -9,6 +9,15 @@ export class AuthStateModel {
   user?: any;
   authChecked: boolean = false;
   error?: any;
+  dataArray? : any
+}
+
+export class FetchFirebaseArray {
+  static readonly type = "[DATA] FetchFirebaseArray";
+  public payload: {};
+  constructor(collection: string) {
+    this.payload = { collection };
+  }
 }
 
 export class Login {
@@ -51,6 +60,28 @@ export class AuthState {
     patchState({ user: result, authChecked: true });
   }
 
+  @Action(FetchFirebaseArray)
+  async fetchFirebaseArray(
+    { patchState, dispatch }: StateContext<AuthStateModel>,
+    { payload: { collection } }: FetchFirebaseArray
+  ) {
+    const result: any = await API.fetchObjects(collection);
+
+    if (result && result.error) {
+      dispatch(new AuthActionFail({ action: Login.type, error: result.error }));
+    } else {
+      let r = []
+
+      result.docs.forEach(i => {
+        r.push({
+          id: i.id,
+          ...i.data()
+        });
+      });
+      patchState({ dataArray: r });
+    }
+  }
+
   @Action(CreateAccount)
   async createAccount(
     { patchState }: StateContext<AuthStateModel>,
@@ -80,7 +111,7 @@ export class AuthState {
 
   @Action(Logout)
   logout({ patchState }: StateContext<AuthStateModel>) {
-    const result: any = API.logout();
+    const result: any = API.signOut();
     if (result && result.error) {
       patchState({ error: result.error });
     } else {

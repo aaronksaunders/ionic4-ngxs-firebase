@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder } from "@angular/forms";
 
 // NGRX
 import { Store, Select } from "@ngxs/store";
-import { Login, CheckAuth, Logout, CreateAccount } from "../store/main-app.state";
+import { Logout, FetchFirebaseArray } from "../store/main-app.state";
 import { Observable } from "rxjs";
 
 @Component({
@@ -17,32 +17,19 @@ export class HomePage {
   storeInfo;
   credentials: { email?: string; password?: string } = {};
 
-  @Select(state => state.auth.authChecked) authChecked$: Observable<any>;
-  @Select(state => state.auth.user) user$: Observable<any>;  
-  @Select(state => state.auth.error) error$: Observable<any>;
+  @Select(state => state.auth.authChecked)
+  authChecked$: Observable<any>;
+  @Select(state => state.auth.user)
+  user$: Observable<any>;
+  @Select(state => state.auth.error)
+  error$: Observable<any>;
+  @Select(state => state.auth.dataArray)
+  data$: Observable<any>;
   constructor(private builder: FormBuilder, public store: Store) {
-
-    this.store.dispatch(new CheckAuth()).subscribe(v => console.log(v));
+    this.store.dispatch(new FetchFirebaseArray("new-test"));
   }
 
   doLogout() {
     this.store.dispatch(new Logout());
-  }
-
-  doLogin(_credentials) {
-    this.submitted = true;
-
-    if (_credentials.valid) {
-      this.store.dispatch(new Login(_credentials.value));
-    }
-  }
-
-  doCreateUser(_credentials) {
-    debugger;
-    this.submitted = true;
-
-    if (_credentials.valid) {
-      this.store.dispatch(new CreateAccount(_credentials.value));
-    }
   }
 }
