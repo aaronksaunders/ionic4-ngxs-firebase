@@ -127,5 +127,12 @@ export default {
       .collection(_type)
       .doc(_id)
       .delete();
+  },
+
+  fetchObject: (_type, id) => {
+    return db
+      .collection(_type)
+      .doc(id)
+      .get();
   }
 };

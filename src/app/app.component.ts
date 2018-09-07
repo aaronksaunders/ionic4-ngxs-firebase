@@ -34,7 +34,7 @@ export class AppComponent {
       // automatocally rroute back to login page
       this.user$.subscribe(v => {
         console.log("CheckAuth", v);
-        if (v && v.user) {
+        if (v) {
           this.router.navigateByUrl("/home");
         } else {
           this.router.navigateByUrl("/login");

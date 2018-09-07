@@ -1,3 +1,12 @@
-<p>
-  details works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ionic4 NGRX</ion-title>
+    <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <p>{{id}}</p>
+  <p>{{currentItem$ | async | json}}</p>
+</ion-content>

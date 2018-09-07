@@ -5,6 +5,7 @@ import { FormGroup, FormBuilder } from "@angular/forms";
 import { Store, Select } from "@ngxs/store";
 import { Logout, FetchFirebaseArray } from "../store/main-app.state";
 import { Observable } from "rxjs";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-home",
@@ -25,11 +26,19 @@ export class HomePage {
   error$: Observable<any>;
   @Select(state => state.auth.dataArray)
   data$: Observable<any>;
-  constructor(private builder: FormBuilder, public store: Store) {
+  constructor(
+    private builder: FormBuilder,
+    public store: Store,
+    private router: Router
+  ) {
     this.store.dispatch(new FetchFirebaseArray("new-test"));
   }
 
   doLogout() {
     this.store.dispatch(new Logout());
+  }
+
+  doDetail(item) {
+    this.router.navigateByUrl(`home/${item.id}`)
   }
 }

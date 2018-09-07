@@ -1,4 +1,10 @@
-import { State, Selector, StateContext, Action } from "@ngxs/store";
+import {
+  State,
+  Selector,
+  StateContext,
+  Action,
+  createSelector
+} from "@ngxs/store";
 
 import { tap } from "rxjs/operators";
 import { of, from } from "rxjs";
@@ -9,17 +15,24 @@ export class AuthStateModel {
   user?: any;
   authChecked: boolean = false;
   error?: any;
-  dataArray? : any
+  dataArray?: any;
 }
 
 export class FetchFirebaseArray {
   static readonly type = "[DATA] FetchFirebaseArray";
-  public payload: {};
+  public payload: { collection: string };
   constructor(collection: string) {
     this.payload = { collection };
   }
 }
 
+export class FetchFirebaseObject {
+  static readonly type = "[DATA] FetchFirebaseObject";
+  public payload: { collection: string; id: string };
+  constructor(collection: string, id: string) {
+    this.payload = { collection, id };
+  }
+}
 export class Login {
   static readonly type = "[Auth] Login";
   constructor(public payload: { email: string; password: string }) {}
@@ -52,6 +65,14 @@ export class AuthState {
     return state.token;
   }
 
+  @Selector()
+  static getObjectById(state: AuthStateModel) {
+    return (id: string) => {
+      console.log('getObjectById', id, state);
+      return state.dataArray.find(d => d.id == id);
+    };
+  }
+
   constructor() {}
 
   @Action(CheckAuth)
@@ -68,9 +89,42 @@ export class AuthState {
     const result: any = await API.fetchObjects(collection);
 
     if (result && result.error) {
-      dispatch(new AuthActionFail({ action: Login.type, error: result.error }));
+      dispatch(
+        new AuthActionFail({
+          action: FetchFirebaseArray.type,
+          error: result.error
+        })
+      );
     } else {
-      let r = []
+      let r = [];
+
+      result.docs.forEach(i => {
+        r.push({
+          id: i.id,
+          ...i.data()
+        });
+      });
+      patchState({ dataArray: r });
+    }
+  }
+
+  @Action(FetchFirebaseObject)
+  async fetchFirebaseObject(
+    { patchState, dispatch }: StateContext<AuthStateModel>,
+    { payload: { collection, id } }: FetchFirebaseObject
+  ) {
+    const result: any = await API.fetchObject(collection, id);
+
+    debugger;
+    if (result && result.error) {
+      dispatch(
+        new AuthActionFail({
+          action: FetchFirebaseObject.type,
+          error: result.error
+        })
+      );
+    } else {
+      let r = [];
 
       result.docs.forEach(i => {
         r.push({

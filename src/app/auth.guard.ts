@@ -7,7 +7,7 @@ import {
 } from "@angular/router";
 import { Select } from "@ngxs/store";
 import { Observable } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
