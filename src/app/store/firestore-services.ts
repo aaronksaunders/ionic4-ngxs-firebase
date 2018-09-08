@@ -2,7 +2,6 @@ import * as firebase from "firebase";
 //require('firebase/firestore')
 
 firebase.initializeApp({
-
 });
 
 const firestore = firebase.firestore();
@@ -115,7 +114,10 @@ export default {
   },
 
   addObject: (_type, _data) => {
-    return db.collection(_type).add({ ..._data });
+    let collection = db.collection(_type);
+    return collection.add({ ..._data }).then(result => {
+      return result.get();
+    });
   },
 
   fetchObjects: _type => {

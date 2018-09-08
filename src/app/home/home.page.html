@@ -26,10 +26,10 @@
       LOGOUT
     </ion-button>
     <ion-item *ngFor="let item of (data$ | async) ">
-      <ion-label text-wrap (click)="doDetail(item)">
-        <pre>{{item | json }}</pre>
-        <ion-button color="danger" (click)="doDeleteObject(item)">DELETE</ion-button>
+      <ion-label>
+        <ion-label text-wrap (click)="doDetail(item)">{{item | json }}</ion-label>
       </ion-label>
+      <ion-button color="danger" (click)="doDeleteObject(item)">DELETE</ion-button>
     </ion-item>
   </ion-list>
 </ion-content>

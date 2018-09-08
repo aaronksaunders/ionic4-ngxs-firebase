@@ -18,6 +18,14 @@ export class AuthStateModel {
   dataArray?: any;
 }
 
+export class CreateFirebaseObject {
+  static readonly type = "[DATA] CreateFirebaseObject";
+  public payload: { collection: string; data: Object };
+  constructor(collection: string, data: Object) {
+    this.payload = { collection, data };
+  }
+}
+
 export class FetchFirebaseArray {
   static readonly type = "[DATA] FetchFirebaseArray";
   public payload: { collection: string };
@@ -28,6 +36,14 @@ export class FetchFirebaseArray {
 
 export class FetchFirebaseObject {
   static readonly type = "[DATA] FetchFirebaseObject";
+  public payload: { collection: string; id: string };
+  constructor(collection: string, id: string) {
+    this.payload = { collection, id };
+  }
+}
+
+export class DeleteFirebaseObject {
+  static readonly type = "[DATA] DeleteFirebaseObject";
   public payload: { collection: string; id: string };
   constructor(collection: string, id: string) {
     this.payload = { collection, id };
@@ -68,7 +84,7 @@ export class AuthState {
   @Selector()
   static getObjectById(state: AuthStateModel) {
     return (id: string) => {
-      console.log('getObjectById', id, state);
+      console.log("getObjectById", id, state);
       return state.dataArray.find(d => d.id == id);
     };
   }
@@ -108,31 +124,39 @@ export class AuthState {
     }
   }
 
-  @Action(FetchFirebaseObject)
-  async fetchFirebaseObject(
-    { patchState, dispatch }: StateContext<AuthStateModel>,
-    { payload: { collection, id } }: FetchFirebaseObject
+  @Action(CreateFirebaseObject)
+  async createFirebaseObject(
+    { patchState, getState }: StateContext<AuthStateModel>,
+    { payload: { collection, data } }: CreateFirebaseObject
   ) {
-    const result: any = await API.fetchObject(collection, id);
-
-    debugger;
+    const result: any = await API.addObject(collection, data);
     if (result && result.error) {
-      dispatch(
-        new AuthActionFail({
-          action: FetchFirebaseObject.type,
-          error: result.error
-        })
-      );
+      patchState({ error: result.error });
     } else {
-      let r = [];
-
-      result.docs.forEach(i => {
-        r.push({
-          id: i.id,
-          ...i.data()
-        });
+      patchState({
+        dataArray: [
+          ...getState().dataArray,
+          { id: result.id, ...result.data() }
+        ]
       });
-      patchState({ dataArray: r });
+    }
+  }
+
+  @Action(DeleteFirebaseObject)
+  async deleteFirebaseObject(
+    { patchState, getState }: StateContext<AuthStateModel>,
+    { payload: { collection, id } }: DeleteFirebaseObject
+  ) {
+    const result: any = await API.removeObject(collection, id);
+    if (result && result.error) {
+      patchState({ error: result.error });
+    } else {
+      let dataArray = getState().dataArray.filter(i => {
+        return i.id !== id;
+      });
+      patchState({
+        dataArray: [...dataArray]
+      });
     }
   }
 
